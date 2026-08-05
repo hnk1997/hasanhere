@@ -6,15 +6,6 @@
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- sticky nav shadow ---------- */
-  var nav = document.getElementById('nav');
-  function onScroll() {
-    if (!nav) return;
-    nav.classList.toggle('is-stuck', window.scrollY > 8);
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
   /* ---------- mobile menu ----------
      Full-screen overlay, Apple-style — lock page scroll behind it
      while it's open, same as the sheet apple.com's menu opens into. */

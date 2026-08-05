@@ -75,7 +75,7 @@
 
 *,*::before,*::after{ box-sizing:border-box; }
 
-html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; scroll-padding-top:var(--nav-h); }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
 
 body{
   margin:0;
@@ -121,10 +121,8 @@ button{ font:inherit; }
    NAV
    ============================================================ */
 .nav{
-  position:fixed; inset:0 0 auto 0; z-index:100;
-  transition:box-shadow .25s ease;
+  position:static;
 }
-.nav.is-stuck{ box-shadow:0 1px 0 var(--line); }
 
 .nav__inner{
   min-height:var(--nav-h);
@@ -132,19 +130,7 @@ button{ font:inherit; }
   display:flex; align-items:center; justify-content:space-between;
   gap:24px;
   position:relative; z-index:1;
-  background:rgba(255,255,255,.8);
-}
-/* backdrop-filter is desktop-only, deliberately: filter/backdrop-filter
-   creates a new containing block for fixed-position descendants, and on
-   mobile .nav__links (nested inside .nav__inner) becomes a full-screen
-   fixed overlay — if .nav__inner carried the filter there too, the
-   overlay would be constrained to the ~80px nav bar instead of filling
-   the screen. Desktop's nav__links never goes fixed, so it's safe there. */
-@media (min-width:861px){
-  .nav__inner{
-    -webkit-backdrop-filter:saturate(180%) blur(20px);
-    backdrop-filter:saturate(180%) blur(20px);
-  }
+  background:var(--bg);
 }
 
 .logo{ display:flex; align-items:center; gap:10px; }
@@ -187,12 +173,14 @@ button{ font:inherit; }
    HERO
    ============================================================ */
 .hero{
-  min-height:100vh;   /* fallback for browsers without dvh support */
-  min-height:100dvh;  /* the *actual* visible viewport — 100vh on mobile
+  /* nav is in normal flow now (not fixed), so it already occupies
+     --nav-h of the viewport above the hero — subtract that here so
+     hero + nav together still fill exactly one screen, not more. */
+  min-height:calc(100vh - var(--nav-h));   /* fallback for browsers without dvh support */
+  min-height:calc(100dvh - var(--nav-h));  /* the *actual* visible viewport — 100vh on mobile
     is measured against the largest possible viewport (browser chrome
     collapsed), so the hero would render taller than what's on screen
     and force a tiny extra scroll. dvh tracks the real, current one. */
-  padding-top:var(--nav-h);
   display:flex; flex-direction:column;
   background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
 }
@@ -579,7 +567,7 @@ button{ font:inherit; }
    matches every other section's shell-minus-gutter math exactly. */
 .about-hero__inner{
   width:100%; max-width:var(--shell); margin:0 auto;
-  padding:calc(var(--nav-h) + 80px) var(--gutter) 40px;
+  padding:80px var(--gutter) 40px;
   display:flex; flex-direction:row; align-items:stretch; gap:72px;
 }
 .about-hero__text{
@@ -765,10 +753,6 @@ button{ font:inherit; }
   display:flex; flex-direction:column; gap:80px;
   padding-bottom:80px;
 }
-/* case-study pages don't pin the nav — it scrolls away with the page */
-body.cs-page .nav{ position:static; }
-body.cs-page{ padding-top:0; }
-
 /* 1200px shell + 24px padding = 1152px content, matching the reference */
 .cs-shell{
   width:100%; max-width:1200px; margin:0 auto;
@@ -1260,7 +1244,7 @@ body.cs-page{ padding-top:0; }
   .about-hero__inner{
     flex-direction:column-reverse; /* portrait is the last DOM child; reversing puts it on top */
     gap:24px;
-    padding-top:calc(var(--nav-h) + 24px);
+    padding-top:24px;
   }
   .about-hero__title{ font-size:30px; }
   .about-hero__portrait{
