@@ -793,6 +793,37 @@ button{ font:inherit; }
   display:flex; align-items:center; justify-content:center; gap:24px;
 }
 .cs-hero__media img{ width:100%; height:auto; }
+/* the Aramco mockup source is much lower-res than Sastaticket's — cap
+   its display width so it isn't upscaled past its native resolution
+   and doesn't pixelate. */
+.cs-hero__media--compact img{ width:auto; max-width:min(100%,900px); margin:0 auto; }
+/* ~75% smaller than the default full-bleed hero mockup */
+.cs-hero__media--tiny img{ width:auto; max-width:min(100%,306px); margin:0 auto; }
+/* shot-wallet.webp is a much taller/narrower portrait than the other
+   tiny-hero assets, so matching it by max-width alone still renders
+   much taller — sized down further so it reads as the same scale. */
+.cs-hero__media--wallet img{ width:auto; max-width:min(100%,221px); margin:0 auto; }
+.cs-hero__media--neom img{ width:auto; max-width:min(100%,398px); margin:0 auto; }
+
+/* 16:9 responsive embed, e.g. a YouTube walkthrough inside a case study */
+.cs-video{
+  position:relative; width:100%; aspect-ratio:16/9;
+  border-radius:24px; overflow:hidden;
+  background:var(--surface);
+}
+.cs-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+/* stand-in for a not-yet-supplied YouTube embed — same 16:9 box so
+   swapping in the real <iframe> later doesn't shift any layout. */
+.cs-video--placeholder{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  border:1px dashed var(--line);
+}
+.cs-video--placeholder .ms{ font-size:48px; color:var(--line); }
+.cs-video--placeholder span:last-child{
+  font-family:var(--ui); font-size:14px; font-weight:500;
+  color:var(--body);
+}
 
 /* ---------- generic section ---------- */
 .cs-section{ display:flex; flex-direction:column; gap:60px; }
@@ -1029,6 +1060,16 @@ button{ font:inherit; }
   letter-spacing:1.2px; text-transform:uppercase;
   color:var(--body);
 }
+/* qualitative outcomes (e.g. "Regional Benchmark") instead of a number —
+   same card, smaller/tighter headline size and a normal-case label since
+   the value itself is already a short phrase, not a stat + unit. */
+.cs-statgrid--text .cs-statcard{ flex-basis:220px; }
+.cs-statcard__num--text{
+  font-size:20px; letter-spacing:-.2px;
+}
+.cs-statgrid--text .cs-statcard__label{
+  text-transform:none; letter-spacing:.2px; font-weight:400;
+}
 
 /* ---------- learnings: one card each ---------- */
 .cs-learnings{ display:flex; flex-direction:column; gap:40px; }
@@ -1101,6 +1142,9 @@ button{ font:inherit; }
   :root{ --nav-h:80px; }
 
   .nav__inner{ min-height:80px; }
+  .cs-hero__media--tiny img{ max-width:min(100%,153px); }
+  .cs-hero__media--wallet img{ max-width:min(100%,110px); }
+  .cs-hero__media--neom img{ max-width:min(100%,199px); }
   .nav__burger{ display:flex; position:relative; z-index:101; }
 
   /* Apple-style mobile menu: a full-screen light-grey overlay sheet
