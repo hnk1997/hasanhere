@@ -187,7 +187,11 @@ button{ font:inherit; }
    HERO
    ============================================================ */
 .hero{
-  min-height:100vh;
+  min-height:100vh;   /* fallback for browsers without dvh support */
+  min-height:100dvh;  /* the *actual* visible viewport — 100vh on mobile
+    is measured against the largest possible viewport (browser chrome
+    collapsed), so the hero would render taller than what's on screen
+    and force a tiny extra scroll. dvh tracks the real, current one. */
   padding-top:var(--nav-h);
   display:flex; flex-direction:column;
   background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
@@ -562,6 +566,7 @@ button{ font:inherit; }
 }
 .footer__social{ display:flex; align-items:center; gap:20px; }
 .footer__social a{ display:inline-flex; color:var(--body); transition:color .2s ease; }
+.footer__social a.is-copied{ color:var(--ink); }
 .footer__social a:hover{ color:var(--ink); }
 .footer__social .ms{ font-size:20px; }
 .footer__social .ico-li{ font-size:17px; }
@@ -1142,8 +1147,8 @@ body.cs-page{ padding-top:0; }
   .nav__links.is-open a:nth-child(4){ transition-delay:.23s; }
   .nav__links a:active{ opacity:.5; }
 
-  .hero__title{ font-size:34px; }
-  .hero__eyebrow{ font-size:17px; }
+  .hero__title{ font-size:32px; }
+  .hero__eyebrow{ font-size:20px; }
   .hero__contact-row{ flex-direction:column; align-items:flex-start; gap:12px; }
   /* the desktop break points were chosen for wide lines — at mobile
      width they'd force an early wrap that strands a lone word on its
@@ -1151,6 +1156,10 @@ body.cs-page{ padding-top:0; }
      ones; more than two lines is fine here, an orphaned word isn't. */
   .hero-br{ display:none; }
   .testi-br{ display:inline; }
+  /* same reasoning as .hero-br above: the case-card titles' manual
+     breaks were balanced for the desktop card width — at mobile width
+     they force early, uneven wraps. Let the browser choose instead. */
+  .case-title-br{ display:none; }
 
   .section-head:not(.section-head--tight){ padding:80px var(--gutter) 16px; }
   .section-head__title{ font-size:28px; }
@@ -1161,7 +1170,9 @@ body.cs-page{ padding-top:0; }
      on top for both .case and .case--flip alike. */
   .case,.case--flip{ flex-direction:column-reverse; align-items:stretch; gap:28px; padding:24px; border-radius:32px; }
   .case__body{ width:100%; gap:32px; }
-  .case__title{ font-size:30px; }
+  .case__title{ font-size:24px; }
+  .case__brand{ font-size:12px; letter-spacing:1.2px; }
+  .case__desc{ font-size:14px; }
   /* a fixed, shared container height instead of "auto" — auto let each
      screenshot's own aspect ratio decide the box size, so portrait
      mobile mockups towered over the wide laptop ones. contain keeps
@@ -1182,6 +1193,9 @@ body.cs-page{ padding-top:0; }
   .case__actions .btn{ width:100%; }
 
   .case__stats{ flex-wrap:wrap; gap:24px; }
+  .stat__num{ font-size:22px; }
+  .stat__label{ font-size:12px; letter-spacing:1.2px; }
+  .tag{ font-size:12px; letter-spacing:1.2px; }
 
   .writing{ padding:80px var(--gutter) 80px; gap:40px; }
   .writing__grid{ grid-template-columns:1fr; }
@@ -1192,6 +1206,7 @@ body.cs-page{ padding-top:0; }
   .quote{ padding:28px; border-radius:32px; }
 
   .footer{ border-radius:32px 32px 0 0; padding:48px 24px 28px; }
+  .footer__name{ font-size:16px; }
   /* a clean vertical list instead of centered wrapping pills — the
      wrap pattern wants width to arrange evenly and just looks ragged
      at narrow widths with only ~300px to work with. */
@@ -1262,6 +1277,7 @@ body.cs-page{ padding-top:0; }
   .about-hero__actions .btn{ width:100%; }
 
   .principles__grid{ grid-template-columns:1fr; }
+  .principle p{ font-size:14px; }
 
   .gallery__grid{ grid-template-columns:1fr 1fr; gap:12px; }
   .gallery__item{ border-radius:16px; }
@@ -1270,25 +1286,16 @@ body.cs-page{ padding-top:0; }
   .awards__credentials{ grid-template-columns:1fr; }
 
   /* Cannes Lions banner: the desktop version bleeds the mockup past the
-     card edges with badges absolutely pinned over it — at mobile width
-     there's no room for that overlap, so it becomes a plain stacked
-     card: logo + icon-only link on one row, medals below, mockup last. */
+     card edges with badges absolutely pinned over it, and links out to
+     thebirdwatcher.ai — at mobile width it becomes a plain non-linking
+     showcase card (logo + medals only, no mockup, no click-through). */
   .awards__project{
     min-height:0; padding:28px 24px 32px;
     display:flex; flex-direction:column; gap:32px;
+    pointer-events:none;
   }
   .awards__project-badges{ position:static; width:100%; gap:20px; }
   .awards__project-head{ width:100%; justify-content:space-between; }
-  .awards__project-icon{
-    display:flex; align-items:center; justify-content:center;
-    width:36px; height:36px; flex:none;
-    border:1px solid var(--line); border-radius:10px;
-    color:var(--ink);
-  }
-  .awards__project-icon .ms{ font-size:18px; }
-  .awards__project-media{
-    position:static; z-index:auto;
-    height:auto; width:100%; max-width:none;
-  }
+  .awards__project-media{ display:none; }
   .awards__project-cta{ display:none; }
 }

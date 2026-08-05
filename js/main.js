@@ -132,17 +132,35 @@
   var emailLinks = document.querySelectorAll('.js-copy-email');
   Array.prototype.forEach.call(emailLinks, function (el) {
     var label = el.querySelector('.js-copy-email-label');
-    var original = label ? label.textContent : null;
+    var icon = el.querySelector('.ms');
+    var originalLabel = label ? label.textContent : null;
+    var originalIcon = icon ? icon.textContent : null;
+    var originalAriaLabel = el.getAttribute('aria-label');
+    var resetTimer = null;
+
     el.addEventListener('click', function (e) {
       var email = el.getAttribute('data-email');
       if (!email || !navigator.clipboard) return; // fall back to mailto:
       e.preventDefault();
       navigator.clipboard.writeText(email).then(function () {
+        clearTimeout(resetTimer);
+        // icon-only links (e.g. the footer mail icon) have no text label
+        // to swap, so swap the glyph itself to a checkmark instead —
+        // otherwise the click looks like it did nothing.
         if (label) {
           label.textContent = 'Copied!';
-          setTimeout(function () { label.textContent = original; }, 1800);
+        } else if (icon) {
+          icon.textContent = 'check';
         }
         el.setAttribute('aria-label', 'Email copied');
+        el.classList.add('is-copied');
+        resetTimer = setTimeout(function () {
+          if (label) label.textContent = originalLabel;
+          if (icon) icon.textContent = originalIcon;
+          if (originalAriaLabel) el.setAttribute('aria-label', originalAriaLabel);
+          else el.removeAttribute('aria-label');
+          el.classList.remove('is-copied');
+        }, 1800);
       });
     });
   });
