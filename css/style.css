@@ -553,11 +553,24 @@ button{ font:inherit; }
   color:var(--muted);
 }
 .footer__social{ display:flex; align-items:center; gap:20px; }
-.footer__social a{ display:inline-flex; color:var(--body); transition:color .2s ease; }
+.footer__social a{ display:inline-flex; position:relative; color:var(--body); transition:color .2s ease; }
 .footer__social a.is-copied{ color:var(--ink); }
 .footer__social a:hover{ color:var(--ink); }
 .footer__social .ms{ font-size:20px; }
 .footer__social .ico-li{ font-size:17px; }
+
+/* "Copied" tooltip for icon-only email-copy links (e.g. the footer
+   mail icon), which have no text label of their own to swap. */
+.js-copy-email__tip{
+  position:absolute; bottom:calc(100% + 10px); left:50%;
+  transform:translateX(-50%) translateY(4px);
+  background:var(--ink); color:var(--bg);
+  font-family:var(--ui); font-size:12px; font-weight:600;
+  padding:5px 10px; border-radius:8px; white-space:nowrap;
+  opacity:0; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.is-copied .js-copy-email__tip{ opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* ============================================================
    ABOUT — intro
