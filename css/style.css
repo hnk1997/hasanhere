@@ -115,10 +115,6 @@ button{ font:inherit; }
 /* mobile-only line break, e.g. the testimonials heading — hidden by
    default, switched on inside the 860px breakpoint below. */
 .testi-br{ display:none; }
-/* generic mobile-only line break — hidden by default, switched on
-   inside the 860px breakpoint, for headings that fit one line on
-   desktop but need a forced break to avoid an awkward mobile wrap. */
-.mobile-br{ display:none; }
 .ico-li svg{ width:100%; height:100%; }
 
 /* ============================================================
@@ -809,12 +805,19 @@ button{ font:inherit; }
 .cs-hero__media--wallet img{ width:auto; max-width:min(100%,221px); margin:0 auto; }
 .cs-hero__media--neom img{ width:auto; max-width:min(100%,398px); margin:0 auto; }
 
-/* 16:9 responsive embed, e.g. a YouTube walkthrough inside a case study */
+/* 16:9 by default — each embed can override with an inline
+   aspect-ratio (e.g. style="aspect-ratio:1012/1812") so the container
+   actually fits that video instead of letterboxing/cropping it. */
 .cs-video{
   position:relative; width:100%; aspect-ratio:16/9;
   background:var(--surface);
 }
 .cs-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+/* classic Vimeo responsive-embed technique (padding-top holds the
+   aspect ratio) for one-off embeds whose exact ratio was supplied
+   directly, rather than going through the .cs-video/16:9 default. */
+.cs-video-embed iframe{ border:0; }
 
 /* stand-in for a not-yet-supplied YouTube embed — same 16:9 box so
    swapping in the real <iframe> later doesn't shift any layout. */
@@ -1195,14 +1198,16 @@ button{ font:inherit; }
      ones; more than two lines is fine here, an orphaned word isn't. */
   .hero-br{ display:none; }
   .testi-br{ display:inline; }
-  .mobile-br{ display:inline; }
   /* same reasoning as .hero-br above: the case-card titles' manual
      breaks were balanced for the desktop card width — at mobile width
      they force early, uneven wraps. Let the browser choose instead. */
   .case-title-br{ display:none; }
 
   .section-head:not(.section-head--tight){ padding:80px var(--gutter) 16px; }
-  .section-head__title{ font-size:28px; }
+  /* text-wrap:balance lets the browser pick the line break itself so
+     both lines land close to equal length, instead of a hand-picked
+     <br> that reads lopsided once the actual word lengths are set. */
+  .section-head__title{ font-size:28px; text-wrap:balance; }
 
   .cases{ gap:40px; }
   /* mockup first, content second, regardless of the desktop L/R flip —
@@ -1306,7 +1311,7 @@ button{ font:inherit; }
     gap:24px;
     padding-top:24px;
   }
-  .about-hero__title{ font-size:30px; }
+  .about-hero__title{ font-size:24px; text-wrap:balance; }
   .about-hero__portrait{
     width:100%; height:220px; /* wide and short, not the tall desktop square */
   }
