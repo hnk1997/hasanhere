@@ -647,9 +647,7 @@ button{ font:inherit; }
   overflow:hidden;
   background:var(--surface);
 }
-/* contain, not cover: the whole photo stays visible (fit inside the box)
-   rather than being cropped to fill it edge to edge. */
-.about-hero__portrait img{ width:100%; height:100%; object-fit:contain; }
+.about-hero__portrait img{ width:100%; height:100%; object-fit:cover; }
 
 /* ============================================================
    ABOUT — principles ("How I Think")
