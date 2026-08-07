@@ -91,6 +91,32 @@ body{
 h1,h2,h3,h4,h5,p,figure,blockquote{ margin:0; }
 a{ color:inherit; text-decoration:none; }
 img,video{ display:block; max-width:100%; }
+
+/* ---------- image skeleton loading ----------
+   Every <img> starts with a shimmering placeholder background and
+   opacity:0; main.js flips on .is-img-loaded the moment it actually
+   finishes loading (or immediately, for images already served from
+   cache — see the .complete check there) so the swap from placeholder
+   to real pixels is a fade, never an abrupt pop. Scoped to real
+   content images only — icon glyphs, decorative SVG logos, and the
+   nav avatar are exempted since they're tiny, load instantly, and a
+   shimmer box around them would look broken rather than helpful. */
+img:not(.is-img-loaded):not(.logo__avatar):not(.footer__avatar):not(.ico-li):not(.credential__badge):not(.awards__project-logo){
+  background:linear-gradient(100deg, var(--surface) 30%, var(--white) 50%, var(--surface) 70%);
+  background-size:200% 100%;
+  animation:img-skeleton 1.4s ease-in-out infinite;
+}
+img{ opacity:1; transition:opacity .35s ease; }
+img:not(.is-img-loaded):not(.logo__avatar):not(.footer__avatar):not(.ico-li):not(.credential__badge):not(.awards__project-logo){
+  opacity:0;
+}
+@keyframes img-skeleton{
+  0%{ background-position:200% 0; }
+  100%{ background-position:-200% 0; }
+}
+@media (prefers-reduced-motion:reduce){
+  img{ animation:none !important; opacity:1 !important; transition:none !important; }
+}
 button{ font:inherit; }
 
 /* Thin, unfilled, slightly negative grade — closer to SF Symbols'

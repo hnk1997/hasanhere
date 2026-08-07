@@ -6,6 +6,22 @@
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ---------- image skeleton loading ----------
+     .is-img-loaded lifts the shimmer/opacity-0 state set in CSS. Images
+     already served from cache report .complete === true synchronously,
+     before a 'load' event would ever fire — checking that first avoids
+     every cached image sitting invisible forever waiting on an event
+     that already happened. */
+  var skeletonImgs = document.querySelectorAll('img');
+  Array.prototype.forEach.call(skeletonImgs, function (img) {
+    if (img.complete) {
+      img.classList.add('is-img-loaded');
+    } else {
+      img.addEventListener('load', function () { img.classList.add('is-img-loaded'); });
+      img.addEventListener('error', function () { img.classList.add('is-img-loaded'); });
+    }
+  });
+
   /* ---------- mobile menu ----------
      Full-screen overlay, Apple-style — lock page scroll behind it
      while it's open, same as the sheet apple.com's menu opens into. */
