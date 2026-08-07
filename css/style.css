@@ -185,6 +185,37 @@ button{ font:inherit; }
   background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
 }
 
+/* ---------- custom hero cursor ----------
+   Trails the real system pointer (which stays visible) rather than
+   replacing it. Fixed at 0,0 and moved with translate() (main.js)
+   rather than top/left, so positioning is a compositor-only
+   transform, not a layout-triggering property — matters here since it
+   updates on every mousemove. Two stacked <img> layers swap between
+   cursor illustrations; main.js sequences the swap the same way the
+   headline rotator sequences its own lines — the outgoing image
+   shrinks to nothing first, then the incoming one grows in from
+   nothing, never both at once — and both phases last PHASE_MS so the
+   two animations stay in step. */
+.hero-cursor{
+  position:fixed; top:0; left:0;
+  width:120px; height:120px;
+  margin-left:20px; margin-top:20px; /* trails below-right of the real pointer */
+  pointer-events:none;
+  z-index:50;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.hero-cursor.is-visible{ opacity:1; }
+.hero-cursor__img{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:contain; object-position:center;
+  opacity:0;
+  transform:scale(.15);
+  transition:opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1);
+}
+.hero-cursor__img.is-active{ opacity:1; transform:scale(1); }
+
 .hero__stage{
   flex:1;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -290,6 +321,10 @@ button{ font:inherit; }
   color:var(--ink);
 }
 .pill .ms{ font-size:18px; color:var(--ink); }
+/* small illustrated icon replacing the plain Material Symbol glyph in
+   some pills — assets are exported at 3x (96px) for retina sharpness
+   at this rendered size. */
+.pill__icon{ width:28px; height:28px; object-fit:contain; flex:none; }
 
 .section-head__title{
   max-width:864px;
@@ -513,6 +548,7 @@ button{ font:inherit; }
   color:var(--ink);
 }
 .footer__top{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.footer__avatar{ width:48px; height:48px; border-radius:14px; margin-bottom:4px; }
 .footer__name{
   font-family:var(--display);
   font-size:24px; font-weight:600; line-height:1;

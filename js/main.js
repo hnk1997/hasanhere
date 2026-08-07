@@ -34,18 +34,105 @@
      partially visible — same spring easing throughout (--spring-fade /
      .hero__line in style.css) for a smooth, single-direction feel. */
   var lines = Array.prototype.slice.call(document.querySelectorAll('.hero__line'));
+  var heroEl = document.querySelector('.hero');
+  var PHASE_MS = 450;   // matches the .hero__line transition duration
+  var DWELL_MS = 3840;  // full cycle: exit, then enter, then hold (~40% longer hold than before)
+
+  /* ---------- custom hero cursor ----------
+     Each rotator line can carry data-cursor="name", trailing a custom
+     illustration alongside the real pointer while that line is
+     showing (e.g. a Burj Khalifa silhouette for the UAE line, Cannes
+     Lions for the award line) — the system cursor itself is left
+     alone, this just rides next to it. A tracked, absolutely-
+     positioned element rather than CSS cursor:url() for two reasons:
+     browsers cap native cursor bitmaps around ~128px and silently
+     fall back to the arrow above that, and CSS cursor swaps are
+     always an instant cut, never a transition. Two stacked <img>
+     layers swap between illustrations the same way the headline swaps
+     lines: the outgoing image shrinks to nothing first, then the
+     incoming one grows in from nothing — sequential, not overlapping
+     — each phase lasting PHASE_MS so both animations stay in step.
+     Position is re-checked against .hero's live bounding box on every
+     move, so it never lingers past the section's actual edge
+     (including once the page has scrolled). */
+  if (heroEl && lines.length) {
+    var cursorEl = document.createElement('div');
+    cursorEl.className = 'hero-cursor';
+    var layerA = document.createElement('img');
+    var layerB = document.createElement('img');
+    layerA.className = 'hero-cursor__img is-active';
+    layerB.className = 'hero-cursor__img';
+    cursorEl.appendChild(layerA);
+    cursorEl.appendChild(layerB);
+    document.body.appendChild(cursorEl);
+
+    var frontLayer = layerA;
+    var backLayer = layerB;
+    var currentName = null;
+    var swapTimer = null;
+
+    var setCursorImage = function (name) {
+      if (!name || name === currentName) return;
+      currentName = name;
+      clearTimeout(swapTimer);
+      // phase 1: shrink the currently-shown image away to nothing
+      frontLayer.classList.remove('is-active');
+      swapTimer = setTimeout(function () {
+        // phase 2: only now load the next image in and grow it up —
+        // never both layers animating at once
+        backLayer.src = 'assets/img/cursor-' + name + '.png';
+        backLayer.classList.add('is-active');
+        var tmp = frontLayer; frontLayer = backLayer; backLayer = tmp;
+      }, PHASE_MS);
+    };
+
+    var applyCursor = function (line) {
+      if (line) setCursorImage(line.getAttribute('data-cursor'));
+    };
+
+    var pointerInsideHero = false;
+    var positionCursor = function (x, y) {
+      cursorEl.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    };
+    document.addEventListener('mousemove', function (e) {
+      var rect = heroEl.getBoundingClientRect();
+      var inside = e.clientY >= rect.top && e.clientY <= rect.bottom &&
+        e.clientX >= rect.left && e.clientX <= rect.right;
+      if (inside !== pointerInsideHero) {
+        pointerInsideHero = inside;
+        cursorEl.classList.toggle('is-visible', inside);
+      }
+      if (inside) positionCursor(e.clientX, e.clientY);
+    }, { passive: true });
+    // scrolling can move .hero out from under a pointer that never
+    // itself moved — re-check on scroll so the cursor doesn't linger.
+    window.addEventListener('scroll', function () {
+      if (!pointerInsideHero) return;
+      var rect = heroEl.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) {
+        pointerInsideHero = false;
+        cursorEl.classList.remove('is-visible');
+      }
+    }, { passive: true });
+
+    applyCursor(lines[0]);
+  }
+
   if (lines.length > 1 && !reduced) {
     var i = 0;
-    var PHASE_MS = 450;   // matches the .hero__line transition duration
-    var DWELL_MS = 3840;  // full cycle: exit, then enter, then hold (~40% longer hold than before)
     setInterval(function () {
       var outgoing = lines[i];
+      var incomingIdx = (i + 1) % lines.length;
       outgoing.classList.remove('is-active');
       outgoing.classList.add('is-leaving');
+      // fire the cursor's own shrink-out in the same tick as the text's,
+      // not after — its internal PHASE_MS delay before growing the new
+      // image in then lines up with the text's PHASE_MS-delayed enter.
+      if (heroEl) applyCursor(lines[incomingIdx]);
 
       setTimeout(function () {
         outgoing.classList.remove('is-leaving');
-        i = (i + 1) % lines.length;
+        i = incomingIdx;
         lines[i].classList.add('is-active');
       }, PHASE_MS);
     }, DWELL_MS);
@@ -158,4 +245,45 @@
       });
     });
   });
+
+  /* ---------- rotate the nav avatar + favicon through a few expressions,
+     swapping to a dedicated hover frame (avatar only, not the tab
+     favicon — there's no such thing as a "hovered" browser tab) ---------- */
+  var avatarFrames = [
+    'assets/img/headshot.webp',
+    'assets/img/headshot-2.webp',
+    'assets/img/headshot-3.webp'
+  ];
+  var avatarHoverFrame = 'assets/img/headshot-hover.webp';
+  var avatarEls = document.querySelectorAll('.logo__avatar');
+  var faviconEl = document.querySelector('link[rel="icon"]');
+  if (avatarFrames.length > 1 && (avatarEls.length || faviconEl)) {
+    var frameIndex = 0;
+    var isHovering = false;
+    var applyFrame = function () {
+      if (isHovering) return;
+      var next = avatarFrames[frameIndex];
+      Array.prototype.forEach.call(avatarEls, function (el) { el.src = next; });
+      if (faviconEl) faviconEl.href = next;
+    };
+    setInterval(function () {
+      frameIndex = (frameIndex + 1) % avatarFrames.length;
+      applyFrame();
+    }, 10000);
+
+    Array.prototype.forEach.call(avatarEls, function (el) {
+      // hover target is the whole logo link (avatar + wordmark), not
+      // just the small 36px image, so the swap triggers anywhere over
+      // the name too.
+      var hoverTarget = el.closest('.logo') || el;
+      hoverTarget.addEventListener('mouseenter', function () {
+        isHovering = true;
+        el.src = avatarHoverFrame;
+      });
+      hoverTarget.addEventListener('mouseleave', function () {
+        isHovering = false;
+        applyFrame();
+      });
+    });
+  }
 })();
