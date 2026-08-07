@@ -286,4 +286,50 @@
       });
     });
   }
+
+  /* ---------- idle "u there?" peek ----------
+     After 20s with no mouse/keyboard/scroll/touch activity, a small
+     character peeks up from the bottom-center edge of the screen;
+     any activity sends it back down and restarts the countdown. Built
+     entirely here (not in the HTML) so it applies site-wide off one
+     shared script rather than needing markup on every page. */
+  var idlePeek = document.createElement('div');
+  idlePeek.className = 'idle-peek';
+  var idlePeekImg = document.createElement('img');
+  idlePeekImg.src = 'assets/img/idle-peek.png';
+  idlePeekImg.alt = '';
+  idlePeekImg.setAttribute('aria-hidden', 'true');
+  idlePeek.appendChild(idlePeekImg);
+  document.body.appendChild(idlePeek);
+
+  // don't pop up over someone actually watching a case-study video —
+  // "idle" (no mouse/keyboard) is the normal state while watching,
+  // so suppress based on whether any video embed is on screen rather
+  // than on activity alone.
+  var videosInView = 0;
+  var videoEls = document.querySelectorAll('.cs-video-embed, .cs-video');
+  if (videoEls.length && 'IntersectionObserver' in window) {
+    var videoObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        videosInView += entry.isIntersecting ? 1 : -1;
+      });
+      videosInView = Math.max(0, videosInView);
+      if (videosInView) idlePeek.classList.remove('is-visible');
+    }, { threshold: 0.4 });
+    Array.prototype.forEach.call(videoEls, function (el) { videoObserver.observe(el); });
+  }
+
+  var IDLE_MS = 20000;
+  var idleTimer = null;
+  var resetIdleTimer = function () {
+    idlePeek.classList.remove('is-visible');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () {
+      if (!videosInView) idlePeek.classList.add('is-visible');
+    }, IDLE_MS);
+  };
+  ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(function (evt) {
+    document.addEventListener(evt, resetIdleTimer, { passive: true });
+  });
+  resetIdleTimer();
 })();

@@ -1384,3 +1384,18 @@ button{ font:inherit; }
   .awards__project-media{ display:none; }
   .awards__project-cta{ display:none; }
 }
+
+/* ---------- idle "u there?" peek ---------- */
+.idle-peek{
+  position:fixed; left:50%; bottom:40px;
+  width:170px;
+  transform:translate(-50%, calc(100% + 40px)); /* clears the resting position's own gap too */
+  pointer-events:none;
+  z-index:60;
+  transition:transform .6s cubic-bezier(.34,1.56,.64,1); /* slight overshoot bounce on the way up */
+}
+.idle-peek.is-visible{ transform:translate(-50%, 0); }
+.idle-peek img{ display:block; width:100%; height:auto; }
+@media (max-width:640px){
+  .idle-peek{ width:160px; }
+}
