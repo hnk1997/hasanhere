@@ -185,7 +185,13 @@
     'assets/img/headshot-2.webp',
     'assets/img/headshot-3.webp'
   ];
+  var avatarTitles = [
+    document.title,
+    'Zzzzz',
+    'Chilling...'
+  ];
   var avatarHoverFrame = 'assets/img/headshot-hover.webp';
+  var avatarHoverTitle = 'Booo!';
   var avatarEls = document.querySelectorAll('.logo__avatar');
   var faviconEl = document.querySelector('link[rel="icon"]');
   if (avatarFrames.length > 1 && (avatarEls.length || faviconEl)) {
@@ -196,6 +202,7 @@
       var next = avatarFrames[frameIndex];
       Array.prototype.forEach.call(avatarEls, function (el) { el.src = next; });
       if (faviconEl) faviconEl.href = next;
+      document.title = avatarTitles[frameIndex];
     };
     setInterval(function () {
       frameIndex = (frameIndex + 1) % avatarFrames.length;
@@ -210,6 +217,7 @@
       hoverTarget.addEventListener('mouseenter', function () {
         isHovering = true;
         el.src = avatarHoverFrame;
+        document.title = avatarHoverTitle;
       });
       hoverTarget.addEventListener('mouseleave', function () {
         isHovering = false;
