@@ -34,93 +34,8 @@
      partially visible — same spring easing throughout (--spring-fade /
      .hero__line in style.css) for a smooth, single-direction feel. */
   var lines = Array.prototype.slice.call(document.querySelectorAll('.hero__line'));
-  var heroEl = document.querySelector('.hero');
   var PHASE_MS = 450;   // matches the .hero__line transition duration
   var DWELL_MS = 3840;  // full cycle: exit, then enter, then hold (~40% longer hold than before)
-  // touch devices have no real hover/pointer to trail — without this,
-  // a tap fires a synthetic mousemove/click and strands the follower
-  // image on screen at the tap point.
-  var hasFinePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
-
-  /* ---------- custom hero cursor ----------
-     Each rotator line can carry data-cursor="name", trailing a custom
-     illustration alongside the real pointer while that line is
-     showing (e.g. a Burj Khalifa silhouette for the UAE line, Cannes
-     Lions for the award line) — the system cursor itself is left
-     alone, this just rides next to it. A tracked, absolutely-
-     positioned element rather than CSS cursor:url() for two reasons:
-     browsers cap native cursor bitmaps around ~128px and silently
-     fall back to the arrow above that, and CSS cursor swaps are
-     always an instant cut, never a transition. Two stacked <img>
-     layers swap between illustrations the same way the headline swaps
-     lines: the outgoing image shrinks to nothing first, then the
-     incoming one grows in from nothing — sequential, not overlapping
-     — each phase lasting PHASE_MS so both animations stay in step.
-     Position is re-checked against .hero's live bounding box on every
-     move, so it never lingers past the section's actual edge
-     (including once the page has scrolled). */
-  if (heroEl && lines.length && hasFinePointer) {
-    var cursorEl = document.createElement('div');
-    cursorEl.className = 'hero-cursor';
-    var layerA = document.createElement('img');
-    var layerB = document.createElement('img');
-    layerA.className = 'hero-cursor__img is-active';
-    layerB.className = 'hero-cursor__img';
-    cursorEl.appendChild(layerA);
-    cursorEl.appendChild(layerB);
-    document.body.appendChild(cursorEl);
-
-    var frontLayer = layerA;
-    var backLayer = layerB;
-    var currentName = null;
-    var swapTimer = null;
-
-    var setCursorImage = function (name) {
-      if (!name || name === currentName) return;
-      currentName = name;
-      clearTimeout(swapTimer);
-      // phase 1: shrink the currently-shown image away to nothing
-      frontLayer.classList.remove('is-active');
-      swapTimer = setTimeout(function () {
-        // phase 2: only now load the next image in and grow it up —
-        // never both layers animating at once
-        backLayer.src = 'assets/img/cursor-' + name + '.png';
-        backLayer.classList.add('is-active');
-        var tmp = frontLayer; frontLayer = backLayer; backLayer = tmp;
-      }, PHASE_MS);
-    };
-
-    var applyCursor = function (line) {
-      if (line) setCursorImage(line.getAttribute('data-cursor'));
-    };
-
-    var pointerInsideHero = false;
-    var positionCursor = function (x, y) {
-      cursorEl.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-    };
-    document.addEventListener('mousemove', function (e) {
-      var rect = heroEl.getBoundingClientRect();
-      var inside = e.clientY >= rect.top && e.clientY <= rect.bottom &&
-        e.clientX >= rect.left && e.clientX <= rect.right;
-      if (inside !== pointerInsideHero) {
-        pointerInsideHero = inside;
-        cursorEl.classList.toggle('is-visible', inside);
-      }
-      if (inside) positionCursor(e.clientX, e.clientY);
-    }, { passive: true });
-    // scrolling can move .hero out from under a pointer that never
-    // itself moved — re-check on scroll so the cursor doesn't linger.
-    window.addEventListener('scroll', function () {
-      if (!pointerInsideHero) return;
-      var rect = heroEl.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > window.innerHeight) {
-        pointerInsideHero = false;
-        cursorEl.classList.remove('is-visible');
-      }
-    }, { passive: true });
-
-    applyCursor(lines[0]);
-  }
 
   if (lines.length > 1 && !reduced) {
     var i = 0;
@@ -129,10 +44,6 @@
       var incomingIdx = (i + 1) % lines.length;
       outgoing.classList.remove('is-active');
       outgoing.classList.add('is-leaving');
-      // fire the cursor's own shrink-out in the same tick as the text's,
-      // not after — its internal PHASE_MS delay before growing the new
-      // image in then lines up with the text's PHASE_MS-delayed enter.
-      if (heroEl && hasFinePointer) applyCursor(lines[incomingIdx]);
 
       setTimeout(function () {
         outgoing.classList.remove('is-leaving');
@@ -290,50 +201,4 @@
       });
     });
   }
-
-  /* ---------- idle "u there?" peek ----------
-     After 20s with no mouse/keyboard/scroll/touch activity, a small
-     character peeks up from the bottom-center edge of the screen;
-     any activity sends it back down and restarts the countdown. Built
-     entirely here (not in the HTML) so it applies site-wide off one
-     shared script rather than needing markup on every page. */
-  var idlePeek = document.createElement('div');
-  idlePeek.className = 'idle-peek';
-  var idlePeekImg = document.createElement('img');
-  idlePeekImg.src = 'assets/img/idle-peek.png';
-  idlePeekImg.alt = '';
-  idlePeekImg.setAttribute('aria-hidden', 'true');
-  idlePeek.appendChild(idlePeekImg);
-  document.body.appendChild(idlePeek);
-
-  // don't pop up over someone actually watching a case-study video —
-  // "idle" (no mouse/keyboard) is the normal state while watching,
-  // so suppress based on whether any video embed is on screen rather
-  // than on activity alone.
-  var videosInView = 0;
-  var videoEls = document.querySelectorAll('.cs-video-embed, .cs-video');
-  if (videoEls.length && 'IntersectionObserver' in window) {
-    var videoObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        videosInView += entry.isIntersecting ? 1 : -1;
-      });
-      videosInView = Math.max(0, videosInView);
-      if (videosInView) idlePeek.classList.remove('is-visible');
-    }, { threshold: 0.4 });
-    Array.prototype.forEach.call(videoEls, function (el) { videoObserver.observe(el); });
-  }
-
-  var IDLE_MS = 20000;
-  var idleTimer = null;
-  var resetIdleTimer = function () {
-    idlePeek.classList.remove('is-visible');
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(function () {
-      if (!videosInView) idlePeek.classList.add('is-visible');
-    }, IDLE_MS);
-  };
-  ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(function (evt) {
-    document.addEventListener(evt, resetIdleTimer, { passive: true });
-  });
-  resetIdleTimer();
 })();

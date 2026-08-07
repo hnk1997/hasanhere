@@ -151,6 +151,10 @@ button{ font:inherit; }
 }
 
 .nav__links{ display:flex; align-items:center; gap:28px; }
+/* "Home" only makes sense as a menu item on mobile, where the nav
+   logo is gone (see .logo below) — on desktop the logo itself already
+   links home, so a duplicate text link would be redundant. */
+.nav__home-link{ display:none; }
 .nav__links a{
   font-family:var(--ui);
   font-size:15px; font-weight:400; line-height:1.2;
@@ -184,37 +188,6 @@ button{ font:inherit; }
   display:flex; flex-direction:column;
   background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
 }
-
-/* ---------- custom hero cursor ----------
-   Trails the real system pointer (which stays visible) rather than
-   replacing it. Fixed at 0,0 and moved with translate() (main.js)
-   rather than top/left, so positioning is a compositor-only
-   transform, not a layout-triggering property — matters here since it
-   updates on every mousemove. Two stacked <img> layers swap between
-   cursor illustrations; main.js sequences the swap the same way the
-   headline rotator sequences its own lines — the outgoing image
-   shrinks to nothing first, then the incoming one grows in from
-   nothing, never both at once — and both phases last PHASE_MS so the
-   two animations stay in step. */
-.hero-cursor{
-  position:fixed; top:0; left:0;
-  width:120px; height:120px;
-  margin-left:20px; margin-top:20px; /* trails below-right of the real pointer */
-  pointer-events:none;
-  z-index:50;
-  opacity:0;
-  transition:opacity .2s ease;
-}
-.hero-cursor.is-visible{ opacity:1; }
-.hero-cursor__img{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  object-fit:contain; object-position:center;
-  opacity:0;
-  transform:scale(.15);
-  transition:opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1);
-}
-.hero-cursor__img.is-active{ opacity:1; transform:scale(1); }
 
 .hero__stage{
   flex:1;
@@ -1178,11 +1151,17 @@ button{ font:inherit; }
 @media (max-width:860px){
   :root{ --nav-h:80px; }
 
-  .nav__inner{ min-height:80px; }
+  .nav__inner{ min-height:80px; justify-content:flex-end; }
   .cs-hero__media--tiny img{ max-width:min(100%,153px); }
   .cs-hero__media--wallet img{ max-width:min(100%,110px); }
   .cs-hero__media--neom img{ max-width:min(100%,199px); }
   .nav__burger{ display:flex; position:relative; z-index:101; }
+  /* the logo (avatar + name) is dropped entirely on mobile — "Home" is
+     covered instead by its own line item at the top of the expanded
+     menu (see .nav__home-link below), and burger becomes the nav's
+     only visible control, right-aligned via justify-content above. */
+  .logo{ display:none; }
+  .nav__home-link{ display:block; order:-1; }
 
   /* Apple-style mobile menu: a full-screen light-grey overlay sheet
      (not an inline dropdown) with a large, left-aligned, ungarnished
@@ -1223,6 +1202,7 @@ button{ font:inherit; }
   .nav__links.is-open a:nth-child(2){ transition-delay:.13s; }
   .nav__links.is-open a:nth-child(3){ transition-delay:.18s; }
   .nav__links.is-open a:nth-child(4){ transition-delay:.23s; }
+  .nav__links.is-open a:nth-child(5){ transition-delay:.28s; }
   .nav__links a:active{ opacity:.5; }
 
   .hero__title{ font-size:32px; }
@@ -1385,17 +1365,3 @@ button{ font:inherit; }
   .awards__project-cta{ display:none; }
 }
 
-/* ---------- idle "u there?" peek ---------- */
-.idle-peek{
-  position:fixed; left:50%; bottom:40px;
-  width:170px;
-  transform:translate(-50%, calc(100% + 40px)); /* clears the resting position's own gap too */
-  pointer-events:none;
-  z-index:60;
-  transition:transform .6s cubic-bezier(.34,1.56,.64,1); /* slight overshoot bounce on the way up */
-}
-.idle-peek.is-visible{ transform:translate(-50%, 0); }
-.idle-peek img{ display:block; width:100%; height:auto; }
-@media (max-width:640px){
-  .idle-peek{ width:160px; }
-}
