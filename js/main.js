@@ -37,6 +37,10 @@
   var heroEl = document.querySelector('.hero');
   var PHASE_MS = 450;   // matches the .hero__line transition duration
   var DWELL_MS = 3840;  // full cycle: exit, then enter, then hold (~40% longer hold than before)
+  // touch devices have no real hover/pointer to trail — without this,
+  // a tap fires a synthetic mousemove/click and strands the follower
+  // image on screen at the tap point.
+  var hasFinePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 
   /* ---------- custom hero cursor ----------
      Each rotator line can carry data-cursor="name", trailing a custom
@@ -55,7 +59,7 @@
      Position is re-checked against .hero's live bounding box on every
      move, so it never lingers past the section's actual edge
      (including once the page has scrolled). */
-  if (heroEl && lines.length) {
+  if (heroEl && lines.length && hasFinePointer) {
     var cursorEl = document.createElement('div');
     cursorEl.className = 'hero-cursor';
     var layerA = document.createElement('img');
@@ -128,7 +132,7 @@
       // fire the cursor's own shrink-out in the same tick as the text's,
       // not after — its internal PHASE_MS delay before growing the new
       // image in then lines up with the text's PHASE_MS-delayed enter.
-      if (heroEl) applyCursor(lines[incomingIdx]);
+      if (heroEl && hasFinePointer) applyCursor(lines[incomingIdx]);
 
       setTimeout(function () {
         outgoing.classList.remove('is-leaving');
