@@ -1404,24 +1404,3 @@ button{ font:inherit; }
   .awards__project-cta{ display:none; }
 }
 
-/* ---------- idle "u there?" peek ----------
-   Appears after a stretch of no activity, peeking up from the bottom
-   edge — bumped off-screen by translateY until .is-visible. */
-.idle-peek{
-  position:fixed;
-  bottom:0; right:32px;
-  width:150px;
-  z-index:2000;
-  pointer-events:none;
-  transform:translateY(60%);
-  transition:transform .5s cubic-bezier(.22,1,.36,1);
-}
-.idle-peek.is-visible{ transform:translateY(0); pointer-events:auto; cursor:pointer; }
-.idle-peek img{ width:100%; height:auto; display:block; }
-@media (max-width:860px){
-  .idle-peek{ width:110px; right:16px; }
-}
-@media (prefers-reduced-motion:reduce){
-  .idle-peek{ transition:none; }
-}
-
