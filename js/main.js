@@ -215,7 +215,7 @@
     setInterval(function () {
       frameIndex = (frameIndex + 1) % avatarFrames.length;
       applyFrame();
-    }, 10000);
+    }, 7500);
 
     Array.prototype.forEach.call(avatarEls, function (el) {
       // hover target is the whole logo link (avatar + wordmark), not
