@@ -1216,12 +1216,17 @@ button{ font:inherit; }
 .credential{
   transition:transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s cubic-bezier(.22,1,.36,1), background-color .2s ease;
 }
-.case:hover,
-.post:hover,
-.awards__project:hover,
-.credential:hover{
-  transform:translateY(-8px) scale(1.015);
-  box-shadow:0 24px 40px -16px rgba(0,0,0,.24);
+/* gated to real-hover pointers only — otherwise touch devices trigger
+   and get stuck in this state on tap, since there's no mouse to leave
+   with afterward. */
+@media (hover:hover) and (pointer:fine){
+  .case:hover,
+  .post:hover,
+  .awards__project:hover,
+  .credential:hover{
+    transform:translateY(-8px) scale(1.015);
+    box-shadow:0 24px 40px -16px rgba(0,0,0,.24);
+  }
 }
 @media (prefers-reduced-motion:reduce){
   .reveal,.reveal.is-in{ opacity:1; transform:none; transition:none; }
@@ -1312,6 +1317,11 @@ button{ font:inherit; }
   .hero__title{ font-size:32px; }
   .hero__eyebrow{ font-size:20px; }
   .hero__icons{ height:68px; }
+  /* the hero icon cluster otherwise bleeds through the full-screen
+     mobile menu overlay on some mobile browsers despite the menu's
+     higher z-index — hiding it outright while the menu is open is a
+     more reliable fix than chasing the stacking-context cause. */
+  body.nav-open .hero__icons{ visibility:hidden; }
   .hero__icon img{ width:56px; height:56px; }
   .hero__icon--multi img{ width:50px; height:50px; }
   .hero__icon--multi img:not(:first-child){ margin-left:-13px; }

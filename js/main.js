@@ -32,12 +32,14 @@
       var open = links.classList.toggle('is-open');
       burger.setAttribute('aria-expanded', String(open));
       document.body.style.overflow = open ? 'hidden' : '';
+      document.body.classList.toggle('nav-open', open);
     });
     links.addEventListener('click', function (e) {
       if (e.target.tagName === 'A') {
         links.classList.remove('is-open');
         burger.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
+        document.body.classList.remove('nav-open');
       }
     });
   }
