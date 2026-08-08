@@ -547,7 +547,6 @@ button{ font:inherit; }
 .footer{
   background:var(--surface);
   border-top:1px solid var(--line);
-  border-radius:40px 40px 0 0;
   padding:60px 40px 32px;
   color:var(--ink);
 }
@@ -1180,16 +1179,15 @@ button{ font:inherit; }
 @media (max-width:860px){
   :root{ --nav-h:80px; }
 
-  .nav__inner{ min-height:80px; justify-content:flex-end; }
+  .nav__inner{ min-height:80px; }
   .cs-hero__media--tiny img{ max-width:min(100%,153px); }
   .cs-hero__media--wallet img{ max-width:min(100%,110px); }
   .cs-hero__media--neom img{ max-width:min(100%,199px); }
   .nav__burger{ display:flex; position:relative; z-index:101; }
-  /* the logo (avatar + name) is dropped entirely on mobile — "Home" is
-     covered instead by its own line item at the top of the expanded
-     menu (see .nav__home-link below), and burger becomes the nav's
-     only visible control, right-aligned via justify-content above. */
-  .logo{ display:none; }
+  /* just the avatar on mobile, no wordmark — "Home" is covered instead
+     by its own line item at the top of the expanded menu (see
+     .nav__home-link below). */
+  .logo__wordmark{ display:none; }
   .nav__home-link{ display:block; order:-1; }
 
   /* Apple-style mobile menu: a full-screen light-grey overlay sheet
@@ -1305,7 +1303,7 @@ button{ font:inherit; }
   .references__col:nth-child(2) .quote:nth-child(3){ order:6; } /* Shayan */
   .quote{ padding:28px; border-radius:32px; }
 
-  .footer{ border-radius:32px 32px 0 0; padding:48px 24px 28px; }
+  .footer{ padding:48px 24px 28px; }
   .footer__name{ font-size:16px; }
   /* a clean vertical list instead of centered wrapping pills — the
      wrap pattern wants width to arrange evenly and just looks ragged
