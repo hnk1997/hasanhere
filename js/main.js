@@ -82,12 +82,18 @@
   if (hero) {
     if (reduced) {
       hero.classList.add('is-loaded');
+      if (icons[0]) icons[0].classList.add('is-active');
     } else {
       // A short setTimeout (rather than requestAnimationFrame) so the
       // trigger still fires promptly even if the tab isn't foregrounded
       // yet when this script runs — rAF callbacks are paused in that case.
       setTimeout(function () {
         hero.classList.add('is-loaded');
+        // the first icon starts with no .is-active class in the HTML
+        // (unlike the first .hero__line) so this triggers the same
+        // spring pop-in transition it gets on every later rotation,
+        // instead of just appearing instantly at full size.
+        if (icons[0]) icons[0].classList.add('is-active');
       }, 30);
     }
   }

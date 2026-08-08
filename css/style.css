@@ -301,9 +301,11 @@ button{ font:inherit; }
 .hero__line.is-active{ opacity:1; transform:translateY(0); }
 .hero__line.is-leaving{ opacity:0; transform:translateY(-18px); }
 
-/* Apple-style subtle appear on page load: icon, eyebrow, headline and
-   contact strip rise and fade in with a short stagger between them. */
-.hero__icons,
+/* Apple-style subtle appear on page load: eyebrow, headline and contact
+   strip rise and fade in with a short stagger between them. The hero
+   icon isn't part of this group — it gets marked .is-active by JS at
+   the same moment, so it plays the exact same spring pop-in (scale +
+   rotate) as every later icon swap, rather than this plainer fade. */
 .hero__eyebrow,
 .hero__title,
 .hero__contact{
@@ -311,11 +313,9 @@ button{ font:inherit; }
   transform:translateY(16px);
   transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
 }
-.hero__icons{ transition-delay:0s; }
 .hero__eyebrow{ transition-delay:.05s; }
 .hero__title{ transition-delay:.16s; }
 .hero__contact{ transition-delay:.4s; }
-.hero.is-loaded .hero__icons,
 .hero.is-loaded .hero__eyebrow,
 .hero.is-loaded .hero__title,
 .hero.is-loaded .hero__contact{ opacity:1; transform:none; }
@@ -1202,8 +1202,8 @@ button{ font:inherit; }
 @media (prefers-reduced-motion:reduce){
   .reveal,.reveal.is-in{ opacity:1; transform:none; transition:none; }
   .hero__line{ transition:none; }
-  .hero__icons,.hero__eyebrow,.hero__title,.hero__contact,
-  .hero.is-loaded .hero__icons,.hero.is-loaded .hero__eyebrow,.hero.is-loaded .hero__title,.hero.is-loaded .hero__contact{
+  .hero__eyebrow,.hero__title,.hero__contact,
+  .hero.is-loaded .hero__eyebrow,.hero.is-loaded .hero__title,.hero.is-loaded .hero__contact{
     opacity:1; transform:none; transition:none;
   }
   .hero__icon,.hero__icon img{ transition:none; }
