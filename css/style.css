@@ -1202,25 +1202,26 @@ button{ font:inherit; }
 }
 
 /* ---------- shared card hover interaction ----------
-   Subtle lift + very soft shadow on hover — smooth Apple-style ease
-   rather than a snappy one. Declared after .reveal.is-in (equal
-   specificity to `.case:hover` etc.) so it wins the cascade and these
-   cards keep their own transition timing instead of inheriting the
-   scroll-reveal's slower one once .is-in has been added. Gallery
-   photos are excluded — they're not clickable, so a hover response
-   there would be misleading. */
+   Lift + soft shadow on hover — smooth Apple-style ease, sized to
+   actually read as interactive rather than disappear at a glance.
+   Declared after .reveal.is-in (equal specificity to `.case:hover`
+   etc.) so it wins the cascade and these cards keep their own
+   transition timing instead of inheriting the scroll-reveal's slower
+   one once .is-in has been added. Gallery photos are excluded —
+   they're not clickable, so a hover response there would be
+   misleading. */
 .case,
 .post,
 .awards__project,
 .credential{
-  transition:transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s cubic-bezier(.22,1,.36,1), background-color .2s ease;
+  transition:transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s cubic-bezier(.22,1,.36,1), background-color .2s ease;
 }
 .case:hover,
 .post:hover,
 .awards__project:hover,
 .credential:hover{
-  transform:translateY(-3px) scale(1.008);
-  box-shadow:0 16px 32px -16px rgba(0,0,0,.16);
+  transform:translateY(-8px) scale(1.015);
+  box-shadow:0 24px 40px -16px rgba(0,0,0,.24);
 }
 @media (prefers-reduced-motion:reduce){
   .reveal,.reveal.is-in{ opacity:1; transform:none; transition:none; }
