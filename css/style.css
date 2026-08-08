@@ -986,8 +986,9 @@ button{ font:inherit; }
 .cs-overview__main{
   flex:0 0 572px; max-width:572px;
   padding-right:24px;
-  display:flex; flex-direction:column; gap:16px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:16px;
 }
+.cs-overview__main .btn{ margin-top:8px; }
 .cs-overview__meta{
   flex:1 1 auto; min-width:0;
   padding-top:8px;
@@ -1198,6 +1199,28 @@ button{ font:inherit; }
 .reveal.is-in{
   opacity:1; transform:none;
   transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);
+}
+
+/* ---------- shared card hover interaction ----------
+   Subtle lift + very soft shadow on hover — smooth Apple-style ease
+   rather than a snappy one. Declared after .reveal.is-in (equal
+   specificity to `.case:hover` etc.) so it wins the cascade and these
+   cards keep their own transition timing instead of inheriting the
+   scroll-reveal's slower one once .is-in has been added. Gallery
+   photos are excluded — they're not clickable, so a hover response
+   there would be misleading. */
+.case,
+.post,
+.awards__project,
+.credential{
+  transition:transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s cubic-bezier(.22,1,.36,1), background-color .2s ease;
+}
+.case:hover,
+.post:hover,
+.awards__project:hover,
+.credential:hover{
+  transform:translateY(-3px) scale(1.008);
+  box-shadow:0 16px 32px -16px rgba(0,0,0,.16);
 }
 @media (prefers-reduced-motion:reduce){
   .reveal,.reveal.is-in{ opacity:1; transform:none; transition:none; }
