@@ -547,6 +547,7 @@ button{ font:inherit; }
 .footer{
   background:var(--surface);
   border-top:1px solid var(--line);
+  border-radius:40px 40px 0 0;
   padding:60px 40px 32px;
   color:var(--ink);
 }
@@ -1303,7 +1304,7 @@ button{ font:inherit; }
   .references__col:nth-child(2) .quote:nth-child(3){ order:6; } /* Shayan */
   .quote{ padding:28px; border-radius:32px; }
 
-  .footer{ padding:48px 24px 28px; }
+  .footer{ border-radius:32px 32px 0 0; padding:48px 24px 28px; }
   .footer__name{ font-size:16px; }
   /* a clean vertical list instead of centered wrapping pills — the
      wrap pattern wants width to arrange evenly and just looks ragged
