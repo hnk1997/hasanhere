@@ -232,6 +232,7 @@
         isHovering = true;
         el.src = avatarHoverFrame;
         document.title = avatarHoverTitle;
+        if (faviconEl) faviconEl.href = avatarHoverFrame;
       });
       hoverTarget.addEventListener('mouseleave', function () {
         isHovering = false;
