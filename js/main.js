@@ -202,7 +202,7 @@
   var avatarTitles = [
     document.title,
     'Zzzzz',
-    'Chilling...'
+    'Contemplating...'
   ];
   var avatarHoverFrame = 'assets/img/headshot-hover.webp';
   var avatarHoverTitle = 'Booo!';
