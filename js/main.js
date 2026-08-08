@@ -225,4 +225,54 @@
       });
     });
   }
+
+  /* ---------- idle "u there?" peek ----------
+     Watching a case study video counts as activity, not idle time —
+     autoplaying/looping in view is exactly when a visitor is most
+     likely to be still, so it's tracked separately and treated as a
+     continuous activity reset rather than left to the idle timer. */
+  if (!reduced) {
+    var IDLE_MS = 15000;
+    var idlePeek = document.createElement('a');
+    idlePeek.className = 'idle-peek';
+    idlePeek.href = 'mailto:hello@hasannawaz.com';
+    idlePeek.setAttribute('aria-hidden', 'true');
+    idlePeek.tabIndex = -1;
+    idlePeek.innerHTML = '<img src="assets/img/idle-peek.webp" alt="">';
+    document.body.appendChild(idlePeek);
+
+    var videoInView = false;
+    var videoWrappers = document.querySelectorAll('.cs-video-embed');
+    if (videoWrappers.length && 'IntersectionObserver' in window) {
+      var vio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) videoInView = true;
+        });
+        videoInView = Array.prototype.some.call(videoWrappers, function (w) {
+          var r = w.getBoundingClientRect();
+          return r.top < window.innerHeight && r.bottom > 0;
+        });
+      }, { threshold: 0.3 });
+      Array.prototype.forEach.call(videoWrappers, function (w) { vio.observe(w); });
+    }
+
+    var lastActivity = Date.now();
+    function markActivity() {
+      lastActivity = Date.now();
+      idlePeek.classList.remove('is-visible');
+    }
+    ['mousemove', 'scroll', 'keydown', 'click', 'touchstart'].forEach(function (evt) {
+      document.addEventListener(evt, markActivity, { passive: true });
+    });
+
+    setInterval(function () {
+      if (videoInView) {
+        lastActivity = Date.now();
+        return;
+      }
+      if (!idlePeek.classList.contains('is-visible') && Date.now() - lastActivity >= IDLE_MS) {
+        idlePeek.classList.add('is-visible');
+      }
+    }, 500);
+  }
 })();
