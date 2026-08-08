@@ -223,6 +223,52 @@ button{ font:inherit; }
   text-align:center;
 }
 
+/* Icon cluster above the eyebrow, swapping in lockstep with the
+   .hero__line rotator below (same JS index, same spring easing) — each
+   frame's icon(s) pop in with a slight overshoot rather than a flat
+   fade, and multi-icon frames stagger child entrance for a livelier,
+   hand-tuned feel instead of everything landing at once. */
+.hero__icons{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:88px;
+  margin-bottom:4px;
+}
+.hero__icon{
+  grid-area:1/1;
+  display:flex; align-items:center; justify-content:center;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+}
+.hero__icon img{
+  width:76px; height:76px;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.16));
+  opacity:0;
+  transform:scale(.4) translateY(10px) rotate(-10deg);
+  transition:opacity .5s var(--spring-fade), transform .5s var(--spring-fade);
+}
+.hero__icon.is-active{ opacity:1; }
+.hero__icon.is-active img{ opacity:1; transform:scale(1) translateY(0) rotate(0deg); }
+.hero__icon.is-leaving img{
+  opacity:0;
+  transform:scale(.5) translateY(-10px) rotate(8deg);
+  transition-duration:.35s;
+}
+/* stagger the pop-in of the second/third icon so a multi-icon frame
+   reads as a small cascade instead of one flat block appearing */
+.hero__icon.is-active img:nth-child(2){ transition-delay:.08s; }
+.hero__icon.is-active img:nth-child(3){ transition-delay:.16s; }
+
+/* globe (travel) and checkmark (payments) sit side by side as two
+   equal, separate marks — not one badge stacked on the other. */
+.hero__icon--multi img{ width:68px; height:68px; }
+.hero__icon--multi img:not(:first-child){ margin-left:-18px; }
+.hero__icon--multi img:nth-child(2){ transform-origin:center; z-index:1; }
+
 .hero__eyebrow{
   display:inline-flex; align-items:center; gap:8px;
   font-family:var(--ui);
@@ -1157,6 +1203,9 @@ button{ font:inherit; }
   .hero.is-loaded .hero__eyebrow,.hero.is-loaded .hero__title,.hero.is-loaded .hero__contact{
     opacity:1; transform:none; transition:none;
   }
+  .hero__icon,.hero__icon img{ transition:none; }
+  .hero__icon:not(.is-active){ display:none; }
+  .hero__icon.is-active img{ opacity:1; transform:none; }
   html{ scroll-behavior:auto; }
 }
 
@@ -1235,6 +1284,10 @@ button{ font:inherit; }
 
   .hero__title{ font-size:32px; }
   .hero__eyebrow{ font-size:20px; }
+  .hero__icons{ height:68px; }
+  .hero__icon img{ width:56px; height:56px; }
+  .hero__icon--multi img{ width:50px; height:50px; }
+  .hero__icon--multi img:not(:first-child){ margin-left:-13px; }
   .hero__contact-row{ flex-direction:column; align-items:flex-start; gap:12px; }
   /* the desktop break points were chosen for wide lines — at mobile
      width they'd force an early wrap that strands a lone word on its

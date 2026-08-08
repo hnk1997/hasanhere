@@ -50,21 +50,29 @@
      partially visible — same spring easing throughout (--spring-fade /
      .hero__line in style.css) for a smooth, single-direction feel. */
   var lines = Array.prototype.slice.call(document.querySelectorAll('.hero__line'));
+  var icons = Array.prototype.slice.call(document.querySelectorAll('.hero__icon'));
   var PHASE_MS = 450;   // matches the .hero__line transition duration
-  var DWELL_MS = 3840;  // full cycle: exit, then enter, then hold (~40% longer hold than before)
+  var DWELL_MS = 2200;  // full cycle: exit, then enter, then hold — quick enough that a hiring manager skimming for a few seconds still sees all three lines
 
   if (lines.length > 1 && !reduced) {
     var i = 0;
     setInterval(function () {
       var outgoing = lines[i];
+      var outgoingIcon = icons[i];
       var incomingIdx = (i + 1) % lines.length;
       outgoing.classList.remove('is-active');
       outgoing.classList.add('is-leaving');
+      if (outgoingIcon) {
+        outgoingIcon.classList.remove('is-active');
+        outgoingIcon.classList.add('is-leaving');
+      }
 
       setTimeout(function () {
         outgoing.classList.remove('is-leaving');
+        if (outgoingIcon) outgoingIcon.classList.remove('is-leaving');
         i = incomingIdx;
         lines[i].classList.add('is-active');
+        if (icons[i]) icons[i].classList.add('is-active');
       }, PHASE_MS);
     }, DWELL_MS);
   }
