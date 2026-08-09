@@ -369,10 +369,6 @@ button{ font:inherit; }
   color:var(--ink);
 }
 .pill .ms{ font-size:18px; color:var(--ink); }
-/* small illustrated icon replacing the plain Material Symbol glyph in
-   some pills — assets are exported at 3x (96px) for retina sharpness
-   at this rendered size. */
-.pill__icon{ width:28px; height:28px; object-fit:contain; flex:none; }
 
 .section-head__title{
   max-width:864px;
@@ -1266,10 +1262,9 @@ button{ font:inherit; }
   .cs-hero__media--wallet img{ max-width:min(100%,110px); }
   .cs-hero__media--neom img{ max-width:min(100%,199px); }
   .nav__burger{ display:flex; position:relative; z-index:101; }
-  /* just the avatar on mobile, no wordmark — "Home" is covered instead
-     by its own line item at the top of the expanded menu (see
-     .nav__home-link below). */
-  .logo__wordmark{ display:none; }
+  /* "Home" is covered by its own line item at the top of the
+     expanded menu (see .nav__home-link below), so the text logo can
+     stay visible here without duplicating it. */
   .nav__home-link{ display:block; order:-1; }
 
   /* Apple-style mobile menu: a full-screen light-grey overlay sheet
